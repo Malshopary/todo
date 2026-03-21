@@ -3,70 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المفكرة الزمنية الذكية 🚀</title>
+    <title>مفكرتي الذكية | Smart Cloud Diary</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
-        .main-card { border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: #fff; }
-        .section-title { font-size: 1.1rem; font-weight: bold; margin-top: 25px; padding-bottom: 10px; border-bottom: 2px solid #dee2e6; color: #2d3748; }
-        .record-card { border-radius: 12px; border: none; border-right: 5px solid #0d6efd; transition: 0.3s; margin-bottom: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
-        .section-today { border-right-color: #007bff; }
-        .section-future { border-right-color: #6f42c1; }
-        .section-past { border-right-color: #e53e3e; }
-        .completed-card { border-right-color: #198754; opacity: 0.75; background-color: #f8fff9; }
-        .badge-time { font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; }
+        :root {
+            --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-color: #764ba2;
+        }
+        body { background-color: #f4f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        
+        /* تصميم الكارت الرئيسي */
+        .main-card { 
+            border: none; border-radius: 25px; 
+            background: #ffffff; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .card-header-grad {
+            background: var(--primary-grad); color: white; padding: 20px; text-align: center;
+        }
+
+        /* نظام البحث */
+        .search-box {
+            position: relative; margin-bottom: 25px;
+        }
+        .search-box input {
+            border-radius: 50px; padding-right: 45px; border: 2px solid #eee;
+            transition: all 0.3s ease; height: 50px;
+        }
+        .search-box input:focus {
+            border-color: var(--accent-color); box-shadow: 0 0 15px rgba(118, 75, 162, 0.1);
+        }
+        .search-icon {
+            position: absolute; right: 20px; top: 15px; color: #aaa;
+        }
+
+        /* تنسيق السجلات */
+        .section-title {
+            font-size: 1rem; font-weight: 800; margin: 30px 0 15px;
+            display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .section-title i { margin-left: 10px; }
+        
+        .record-card {
+            border: none; border-radius: 18px; background: white;
+            margin-bottom: 15px; transition: all 0.3s ease;
+            border-right: 6px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+        .record-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        
+        .status-today { border-right-color: #007bff; }
+        .status-future { border-right-color: #6f42c1; }
+        .status-past { border-right-color: #dc3545; }
+        .status-completed { border-right-color: #198754; background: #fafffa; opacity: 0.9; }
+
+        .btn-action {
+            width: 35px; height: 35px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; transition: 0.2s;
+            border: none; background: #f8f9fa;
+        }
+        .btn-action:hover { background: #eee; transform: scale(1.1); }
+
+        .nav-pills .nav-link {
+            border-radius: 50px; padding: 8px 25px; font-weight: 600; color: #666;
+        }
+        .nav-pills .nav-link.active { background: var(--primary-grad); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+        
+        .edit-badge {
+            font-size: 0.7rem; color: #f39c12; background: #fef5e7;
+            padding: 3px 10px; border-radius: 50px; display: inline-block;
+        }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-9 col-lg-8">
+        <div class="col-md-10 col-lg-8">
             
-            <div class="card main-card p-4 mb-4">
-                <h4 class="text-center fw-bold mb-4 text-primary"><i class="fa-solid fa-calendar-check me-2"></i>إضافة ملاحظة ذكية</h4>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-bold">اختر التاريخ</label>
-                        <input type="date" id="dateInput" class="form-control shadow-sm">
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label small fw-bold">الملاحظة</label>
-                        <input type="text" id="dataInput" class="form-control shadow-sm" placeholder="ماذا تريد أن تسجل؟">
-                    </div>
-                    <div class="col-12 mt-3">
-                        <button id="saveBtn" onclick="handleSave()" class="btn btn-primary w-100 py-2 fw-bold shadow">
-                            <i class="fa-solid fa-plus-circle me-1"></i> حفظ ومزامنة سحابية
-                        </button>
+            <div class="card main-card mb-5">
+                <div class="card-header-grad">
+                    <h4 class="mb-0 fw-bold" id="formTitle"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك ومهامك</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">التاريخ</label>
+                            <input type="date" id="dateInput" class="form-control border-0 bg-light rounded-3">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small text-muted">الملاحظة</label>
+                            <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
+                        </div>
+                        <div class="col-12 mt-4 text-center">
+                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
+                                <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" class="form-control shadow-sm" placeholder="ابحث في سجلاتك..." onkeyup="renderData()">
+            </div>
+
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="nav nav-pills bg-white p-1 rounded shadow-sm">
-                    <button class="nav-link active" id="btn-pending" onclick="setTab('pending')">المحفوظة</button>
-                    <button class="nav-link" id="btn-completed" onclick="setTab('completed')">المكتملة</button>
-                </div>
-                <div class="badge bg-dark p-2 rounded-pill shadow-sm" id="currentDateDisplay"></div>
+                <ul class="nav nav-pills bg-white shadow-sm p-1 rounded-pill" id="pills-tab">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="setTab('pending')">المحفوظة</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="setTab('completed')">المكتملة</button>
+                    </li>
+                </ul>
+                <div class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3 fw-bold" id="currentDateDisplay"></div>
             </div>
 
             <div id="timelineContainer">
                 <div id="section-past-div" style="display:none;">
-                    <div class="section-title text-danger"><i class="fa-solid fa-clock-rotate-left me-2"></i>سابقاً (فاتت ولم تكتمل)</div>
-                    <div id="list-past" class="mt-3"></div>
+                    <div class="section-title text-danger"><i class="fa-solid fa-hourglass-end"></i> سجلات سابقة</div>
+                    <div id="list-past"></div>
                 </div>
 
                 <div id="section-today-div" style="display:none;">
-                    <div class="section-title text-primary"><i class="fa-solid fa-star me-2"></i>اليوم</div>
-                    <div id="list-today" class="mt-3"></div>
+                    <div class="section-title text-primary"><i class="fa-solid fa-calendar-day"></i> قائمة اليوم</div>
+                    <div id="list-today"></div>
                 </div>
 
                 <div id="section-future-div" style="display:none;">
-                    <div class="section-title text-purple" style="color:#6f42c1;"><i class="fa-solid fa-forward me-2"></i>لاحقاً</div>
-                    <div id="list-future" class="mt-3"></div>
+                    <div class="section-title text-purple" style="color:#764ba2;"><i class="fa-solid fa-forward-step"></i> مهام لاحقاً</div>
+                    <div id="list-future"></div>
                 </div>
             </div>
 
@@ -78,7 +149,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } 
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -96,10 +167,10 @@
 
     let currentTab = 'pending';
     let allRecords = [];
+    let editingId = null;
 
-    // عرض تاريخ اليوم في الواجهة
     const todayStr = new Date().toISOString().split('T')[0];
-    document.getElementById('currentDateDisplay').innerText = "تاريخ اليوم: " + todayStr;
+    document.getElementById('currentDateDisplay').innerText = todayStr;
     document.getElementById('dateInput').value = todayStr;
 
     onSnapshot(query(recordsCol, orderBy("timestamp", "desc")), (snapshot) => {
@@ -111,98 +182,117 @@
         const dateVal = document.getElementById('dateInput').value;
         const content = document.getElementById('dataInput').value;
 
-        if(!dateVal || !content) return alert("يرجى إدخال البيانات");
-
-        // ❌ منع التواريخ القديمة
-        if(dateVal < todayStr) {
-            alert("لا يمكن إضافة ملاحظة في تاريخ قديم!");
+        if(!dateVal || !content) return;
+        if(dateVal < todayStr && !editingId) {
+            alert("لا يمكنك التسجيل في الماضي!");
             return;
         }
 
-        await addDoc(recordsCol, {
-            date: dateVal,
-            content: content,
-            isCompleted: false,
-            timestamp: Date.now(),
-            lastEdit: null
-        });
+        const btn = document.getElementById('saveBtn');
+
+        if (editingId) {
+            const lastEditTime = new Date().toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+            await updateDoc(doc(db, "smart_records", editingId), {
+                date: dateVal, content: content, lastEdit: lastEditTime
+            });
+            editingId = null;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة';
+            btn.className = "btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-lg border-0";
+            document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
+        } else {
+            await addDoc(recordsCol, {
+                date: dateVal, content: content, isCompleted: false, timestamp: Date.now(), lastEdit: null
+            });
+        }
 
         document.getElementById('dataInput').value = "";
     };
 
     window.renderData = () => {
-        const listPast = document.getElementById('list-past');
-        const listToday = document.getElementById('list-today');
-        const listFuture = document.getElementById('list-future');
-        const listCompleted = document.getElementById('list-completed');
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const lists = {
+            past: document.getElementById('list-past'),
+            today: document.getElementById('list-today'),
+            future: document.getElementById('list-future'),
+            completed: document.getElementById('list-completed')
+        };
         const timeline = document.getElementById('timelineContainer');
 
-        // تفريغ القوائم
-        [listPast, listToday, listFuture, listCompleted].forEach(l => l.innerHTML = "");
+        Object.values(lists).forEach(l => l.innerHTML = "");
+
+        const filtered = allRecords.filter(r => r.content.toLowerCase().includes(search));
 
         if (currentTab === 'completed') {
             timeline.style.display = 'none';
-            listCompleted.style.display = 'block';
-            const completedItems = allRecords.filter(r => r.isCompleted);
-            completedItems.forEach(r => listCompleted.appendChild(createCard(r)));
+            lists.completed.style.display = 'block';
+            filtered.filter(r => r.isCompleted).forEach(r => lists.completed.appendChild(createCard(r, 'status-completed')));
         } else {
             timeline.style.display = 'block';
-            listCompleted.style.display = 'none';
-
-            const pendingItems = allRecords.filter(r => !r.isCompleted);
-            
-            pendingItems.forEach(r => {
-                if (r.date === todayStr) {
-                    listToday.appendChild(createCard(r, 'section-today'));
-                } else if (r.date > todayStr) {
-                    listFuture.appendChild(createCard(r, 'section-future'));
-                } else {
-                    listPast.appendChild(createCard(r, 'section-past'));
-                }
+            lists.completed.style.display = 'none';
+            filtered.filter(r => !r.isCompleted).forEach(r => {
+                if (r.date === todayStr) lists.today.appendChild(createCard(r, 'status-today'));
+                else if (r.date > todayStr) lists.future.appendChild(createCard(r, 'status-future'));
+                else lists.past.appendChild(createCard(r, 'status-past'));
             });
 
-            // إظهار/إخفاء العناوين حسب وجود بيانات
-            document.getElementById('section-past-div').style.display = listPast.children.length ? 'block' : 'none';
-            document.getElementById('section-today-div').style.display = listToday.children.length ? 'block' : 'none';
-            document.getElementById('section-future-div').style.display = listFuture.children.length ? 'block' : 'none';
+            document.getElementById('section-past-div').style.display = lists.past.children.length ? 'block' : 'none';
+            document.getElementById('section-today-div').style.display = lists.today.children.length ? 'block' : 'none';
+            document.getElementById('section-future-div').style.display = lists.future.children.length ? 'block' : 'none';
         }
     };
 
-    function createCard(r, sectionClass = '') {
+    function createCard(r, statusClass) {
         const div = document.createElement('div');
-        div.className = `card record-card p-3 shadow-sm ${sectionClass} ${r.isCompleted ? 'completed-card' : ''}`;
+        div.className = `card record-card p-3 shadow-sm ${statusClass}`;
         div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="badge bg-light text-dark border badge-time">📅 ${r.date}</span>
-                <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-outline-success border-0" onclick="toggleComplete('${r.id}', ${!r.isCompleted})">
-                        <i class="fa-solid ${r.isCompleted ? 'fa-rotate-left' : 'fa-check-circle'}"></i>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date}</span>
+                <div class="d-flex gap-2">
+                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!r.isCompleted})">
+                        <i class="fa-solid ${r.isCompleted ? 'fa-rotate-left' : 'fa-check'}"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger border-0" onclick="deleteRecord('${r.id}')">
+                    <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')">
+                        <i class="fa-solid fa-pen-nib"></i>
+                    </button>
+                    <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
             </div>
-            <p class="mb-1 fw-medium text-dark">${r.content}</p>
+            <p class="mb-1 fw-bold text-dark fs-6">${r.content}</p>
+            ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
         `;
         return div;
     }
+
+    window.prepareEdit = (id) => {
+        const r = allRecords.find(item => item.id === id);
+        document.getElementById('dateInput').value = r.date;
+        document.getElementById('dataInput').value = r.content;
+        editingId = id;
+
+        const btn = document.getElementById('saveBtn');
+        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate me-2"></i> تحديث السجل الحالي';
+        btn.style.background = "#f39c12"; 
+        document.getElementById('formTitle').innerText = "تعديل السجل الحالي";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     window.toggleComplete = async (id, status) => {
         await updateDoc(doc(db, "smart_records", id), { isCompleted: status });
     };
 
     window.deleteRecord = async (id) => {
-        if(confirm("هل تريد الحذف؟")) await deleteDoc(doc(db, "smart_records", id));
+        if(confirm("هل أنت متأكد من حذف هذا السجل؟")) await deleteDoc(doc(db, "smart_records", id));
     };
 
     window.setTab = (tab) => {
         currentTab = tab;
-        document.getElementById('btn-pending').classList.toggle('active', tab === 'pending');
-        document.getElementById('btn-completed').classList.toggle('active', tab === 'completed');
         renderData();
+        const btns = document.querySelectorAll('#pills-tab .nav-link');
+        btns[0].classList.toggle('active', tab === 'pending');
+        btns[1].classList.toggle('active', tab === 'completed');
     };
-
 </script>
 </body>
 </html>
