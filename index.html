@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
+        : root {
             --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --accent-color: #764ba2;
         }
@@ -32,7 +32,7 @@
             border-radius: 50px; padding-right: 45px; border: 2px solid #eee;
             transition: all 0.3s ease; height: 50px;
         }
-        .search-box input:focus {
+        .search-box input: focus {
             border-color: var(--accent-color); box-shadow: 0 0 15px rgba(118, 75, 162, 0.1);
         }
         .search-icon {
@@ -129,12 +129,10 @@
                     <div class="section-title text-danger"><i class="fa-solid fa-hourglass-end"></i> سجلات سابقة</div>
                     <div id="list-past"></div>
                 </div>
-
                 <div id="section-today-div" style="display:none;">
                     <div class="section-title text-primary"><i class="fa-solid fa-calendar-day"></i> قائمة اليوم</div>
                     <div id="list-today"></div>
                 </div>
-
                 <div id="section-future-div" style="display:none;">
                     <div class="section-title text-purple" style="color:#764ba2;"><i class="fa-solid fa-forward-step"></i> مهام لاحقاً</div>
                     <div id="list-future"></div>
@@ -152,6 +150,7 @@
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, onSnapshot } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // ⚠️ لا تنسى وضع بيانات الـ Config الخاصة بك هنا
     const firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -180,7 +179,8 @@
 
     window.handleSave = async () => {
         const dateVal = document.getElementById('dateInput').value;
-        const content = document.getElementById('dataInput').value;
+        const contentInput = document.getElementById('dataInput');
+        const content = contentInput.value.trim();
 
         if(!dateVal || !content) return;
         if(dateVal < todayStr && !editingId) {
@@ -191,15 +191,17 @@
         const btn = document.getElementById('saveBtn');
 
         if (editingId) {
-            const lastEditTime = new Date().toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+            const now = new Date();
+            const lastEditTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            
             await updateDoc(doc(db, "smart_records", editingId), {
                 date: dateVal, content: content, lastEdit: lastEditTime
             });
-            // 🔄 إرجاع الزر لحالته الأصلية
+
+            // ✅ إعادة الزر لوضعه الأصلي
             editingId = null;
             btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة';
-            btn.style.background = ""; // يمسح اللون اليدوي ليعود للتدرج في الـ CSS
-            btn.classList.add('btn-primary');
+            btn.style.background = "var(--primary-grad)";
             document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
         } else {
             await addDoc(recordsCol, {
@@ -207,7 +209,8 @@
             });
         }
 
-        document.getElementById('dataInput').value = "";
+        // ✅ تفريغ خانة الملاحظة دائماً بعد الحفظ أو التحديث
+        contentInput.value = "";
     };
 
     window.renderData = () => {
@@ -232,9 +235,9 @@
             timeline.style.display = 'block';
             lists.completed.style.display = 'none';
             filtered.filter(r => !r.isCompleted).forEach(r => {
-                if (r.date === todayStr) lists.today.appendChild(createCard(r, 'status-today'));
-                else if (r.date > todayStr) lists.future.appendChild(createCard(r, 'status-future'));
-                else lists.past.appendChild(createCard(r, 'status-past'));
+                if (r.date === todayStr) lists. today.appendChild(createCard(r, 'status-today'));
+                else if (r.date > todayStr) lists. future.appendChild(createCard(r, 'status-future'));
+                else lists. past.appendChild(createCard(r, 'status-past'));
             });
 
             document.getElementById('section-past-div').style.display = lists.past.children.length ? 'block' : 'none';
@@ -247,7 +250,6 @@
         const div = document.createElement('div');
         div.className = `card record-card p-3 shadow-sm ${statusClass}`;
         
-        // منع التعديل في حالة المكتملة
         const editBtn = !r.isCompleted ? `
             <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')">
                 <i class="fa-solid fa-pen-nib"></i>
@@ -266,8 +268,8 @@
                     </button>
                 </div>
             </div>
-            <p class="mb-1 fw-bold text-dark fs-6 text-break">${r.content}</p>
-            ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
+            <p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p>
+            ${r.lastEdit? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
         `;
         return div;
     }
