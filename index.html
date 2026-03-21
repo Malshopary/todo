@@ -50,7 +50,7 @@
             margin-bottom: 15px; transition: all 0.3s ease;
             border-right: 6px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
-        .record-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .record-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         
         .status-today { border-right-color: #007bff; }
         .status-future { border-right-color: #6f42c1; }
@@ -74,9 +74,11 @@
             padding: 3px 10px; border-radius: 50px; display: inline-block;
         }
 
-        /* تنسيق شاشة الدخول */
         #authSection { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .auth-card { width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        /* تحسين شكل التعديل المباشر */
+        .inline-edit-input { border: 2px solid #764ba2; border-radius: 10px; padding: 8px; width: 100%; margin: 5px 0; }
     </style>
 </head>
 <body>
@@ -95,7 +97,6 @@
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
-                
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span id="userEmailBadge" class="badge bg-white text-dark p-2 px-3 border rounded-pill shadow-sm"></span>
                     <button onclick="handleLogout()" class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm"><i class="fa-solid fa-power-off"></i> خروج</button>
@@ -103,7 +104,7 @@
 
                 <div class="card main-card mb-5">
                     <div class="card-header-grad">
-                        <h4 class="mb-0 fw-bold" id="formTitle"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك ومهامك</h4>
+                        <h4 class="mb-0 fw-bold"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك ومهامك</h4>
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
@@ -116,7 +117,7 @@
                                 <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
                             </div>
                             <div class="col-12 mt-4 text-center d-flex gap-2">
-                                <button id="saveBtn" onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
+                                <button onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
                                     <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
                                 </button>
                                 <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0">
@@ -145,22 +146,11 @@
                 </div>
 
                 <div id="timelineContainer">
-                    <div id="section-past-div" style="display:none;">
-                        <div class="section-title text-danger"><i class="fa-solid fa-hourglass-end"></i> سجلات سابقة</div>
-                        <div id="list-past"></div>
-                    </div>
-                    <div id="section-today-div" style="display:none;">
-                        <div class="section-title text-primary"><i class="fa-solid fa-calendar-day"></i> قائمة اليوم</div>
-                        <div id="list-today"></div>
-                    </div>
-                    <div id="section-future-div" style="display:none;">
-                        <div class="section-title text-purple" style="color:#764ba2;"><i class="fa-solid fa-forward-step"></i> مهام لاحقاً</div>
-                        <div id="list-future"></div>
-                    </div>
+                    <div id="section-past-div" style="display:none;"><div class="section-title text-danger"><i class="fa-solid fa-hourglass-end"></i> سجلات سابقة</div><div id="list-past"></div></div>
+                    <div id="section-today-div" style="display:none;"><div class="section-title text-primary"><i class="fa-solid fa-calendar-day"></i> قائمة اليوم</div><div id="list-today"></div></div>
+                    <div id="section-future-div" style="display:none;"><div class="section-title text-purple" style="color:#764ba2;"><i class="fa-solid fa-forward-step"></i> مهام لاحقاً</div><div id="list-future"></div></div>
                 </div>
-
                 <div id="list-completed" style="display:none;"></div>
-
             </div>
         </div>
     </div>
@@ -188,7 +178,6 @@
 
     let currentTab = 'pending';
     let allRecords = [];
-    let editingId = null;
     let currentUser = null;
     let unsub = null;
     let isLoginMode = true;
@@ -197,7 +186,6 @@
     document.getElementById('currentDateDisplay').innerText = todayStr;
     document.getElementById('dateInput').value = todayStr;
 
-    // مراقبة حالة المستخدم
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
@@ -213,14 +201,11 @@
         }
     });
 
-    // جلب البيانات الخاصة بالمستخدم
     function startListening() {
         const q = query(recordsCol, where("userId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         unsub = onSnapshot(q, (snapshot) => {
             allRecords = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             window.renderData();
-        }, (error) => {
-            console.error("Index Error: ", error);
         });
     }
 
@@ -238,9 +223,7 @@
         isLoginMode = !isLoginMode;
         document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'حساب جديد';
         document.getElementById('authBtn').innerText = isLoginMode ? 'دخول' : 'إنشاء حساب';
-        document.getElementById('toggleAuthText').innerHTML = isLoginMode ? 
-            'ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()">سجل الآن</a>' : 
-            'لديك حساب بالفعل؟ <a href="#" onclick="toggleAuthMode()">سجل دخول</a>';
+        document.getElementById('toggleAuthText').innerHTML = isLoginMode ? 'ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()">سجل الآن</a>' : 'لديك حساب بالفعل؟ <a href="#" onclick="toggleAuthMode()">سجل دخول</a>';
     };
 
     window.handleLogout = () => signOut(auth);
@@ -250,38 +233,27 @@
         const contentInput = document.getElementById('dataInput');
         const content = contentInput.value.trim();
         if(!dateVal || !content) return;
-        
-        if(dateVal < todayStr && !editingId) return alert("لا يمكنك التسجيل في الماضي!");
+        if(dateVal < todayStr) return alert("لا يمكنك التسجيل في الماضي!");
 
-        const btn = document.getElementById('saveBtn');
         try {
-            if (editingId) {
-                const now = new Date();
-                const lastEditTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                await updateDoc(doc(db, "smart_records", editingId), { date: dateVal, content: content, lastEdit: lastEditTime });
-                editingId = null;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة';
-                btn.style.background = "var(--primary-grad)";
-                document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
-            } else {
-                await addDoc(recordsCol, {
-                    userId: currentUser.uid,
-                    date: dateVal, content: content,
-                    isCompleted: false, timestamp: Date.now(), lastEdit: null
-                });
-            }
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            await addDoc(recordsCol, {
+                userId: currentUser.uid,
+                date: dateVal,
+                time: timeStr,
+                content: content,
+                isCompleted: false,
+                timestamp: Date.now(),
+                lastEdit: null
+            });
             contentInput.value = "";
         } catch (e) { alert("حدث خطأ أثناء الحفظ"); }
     };
 
     window.renderData = () => {
         const search = document.getElementById('searchInput').value.toLowerCase();
-        const lists = {
-            past: document.getElementById('list-past'),
-            today: document.getElementById('list-today'),
-            future: document.getElementById('list-future'),
-            completed: document.getElementById('list-completed')
-        };
+        const lists = { past: document.getElementById('list-past'), today: document.getElementById('list-today'), future: document.getElementById('list-future'), completed: document.getElementById('list-completed') };
         const timeline = document.getElementById('timelineContainer');
         Object.values(lists).forEach(l => l.innerHTML = "");
 
@@ -307,53 +279,70 @@
 
     function createCard(r, statusClass) {
         const div = document.createElement('div');
+        div.id = `card-${r.id}`;
         div.className = `card record-card p-3 shadow-sm ${statusClass}`;
-        const editBtn = !r.isCompleted ? `<button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')"><i class="fa-solid fa-pen-nib"></i></button>` : '';
+        
+        const isComp = r.isCompleted;
+        const timeDisplay = r.time ? `<span class="ms-2">🕒 ${r.time}</span>` : "";
+
         div.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date}</span>
+                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date} ${timeDisplay}</span>
                 <div class="d-flex gap-2">
-                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!r.isCompleted})"><i class="fa-solid ${r.isCompleted ? 'fa-rotate-left' : 'fa-check'}"></i></button>
-                    ${editBtn}
-                    <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!isComp})"><i class="fa-solid ${isComp ? 'fa-rotate-left' : 'fa-check'}"></i></button>
+                    ${!isComp ? `<button class="btn-action text-warning shadow-sm" onclick="inlineEdit('${r.id}')"><i class="fa-solid fa-pen-nib"></i></button>` : ''}
+                    ${!isComp ? `<button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                 </div>
             </div>
-            <p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p>
-            ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
+            <div id="content-container-${r.id}">
+                <p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p>
+                ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
+            </div>
         `;
         return div;
     }
 
-    window.prepareEdit = (id) => {
+    window.inlineEdit = (id) => {
         const r = allRecords.find(item => item.id === id);
-        document.getElementById('dateInput').value = r.date;
-        document.getElementById('dataInput').value = r.content;
-        editingId = id;
-        const btn = document.getElementById('saveBtn');
-        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate me-2"></i> تحديث السجل الحالي';
-        btn.style.background = "#f39c12"; 
-        document.getElementById('formTitle').innerText = "تعديل السجل الحالي";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const container = document.getElementById(`content-container-${id}`);
+        container.innerHTML = `
+            <textarea id="edit-input-${id}" class="form-control inline-edit-input" rows="2">${r.content}</textarea>
+            <div class="d-flex gap-2 mt-2">
+                <button class="btn btn-sm btn-success rounded-pill px-3" onclick="saveInline('${id}')">حفظ التعديل</button>
+                <button class="btn btn-sm btn-light rounded-pill px-3" onclick="renderData()">إلغاء</button>
+            </div>
+        `;
     };
 
-    window.exportToExcel = () => {
-        if (allRecords.length === 0) return alert("لا يوجد بيانات لتصديرها");
-        let csv = "\ufeffالتاريخ,المحتوى,الحالة,آخر تعديل\n";
-        allRecords.forEach(r => { csv += `"${r.date}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}","${r.lastEdit || 'أصلي'}"\n`; });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `سجل_سحابي_${new Date().toLocaleDateString()}.csv`;
-        link.click();
+    window.saveInline = async (id) => {
+        const newContent = document.getElementById(`edit-input-${id}`).value.trim();
+        if(!newContent) return;
+        const now = new Date();
+        const lastEditTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        try {
+            await updateDoc(doc(db, "smart_records", id), { content: newContent, lastEdit: lastEditTime });
+        } catch (e) { alert("خطأ في التحديث"); }
     };
 
     window.toggleComplete = async (id, status) => { await updateDoc(doc(db, "smart_records", id), { isCompleted: status }); };
     window.deleteRecord = async (id) => { if(confirm("هل أنت متأكد من حذف هذا السجل؟")) await deleteDoc(doc(db, "smart_records", id)); };
+    
     window.setTab = (tab) => {
         currentTab = tab; window.renderData();
         const btns = document.querySelectorAll('#pills-tab .nav-link');
         btns[0].classList.toggle('active', tab === 'pending');
         btns[1].classList.toggle('active', tab === 'completed');
+    };
+
+    window.exportToExcel = () => {
+        if (allRecords.length === 0) return alert("لا يوجد بيانات لتصديرها");
+        let csv = "\ufeffالتاريخ,الوقت,المحتوى,الحالة\n";
+        allRecords.forEach(r => { csv += `"${r.date}","${r.time || ''}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}"\n`; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `سجل_سحابي_${new Date().toLocaleDateString()}.csv`;
+        link.click();
     };
 </script>
 </body>
