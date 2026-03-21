@@ -15,7 +15,6 @@
         }
         body { background-color: #f4f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
         
-        /* تصميم الكارت الرئيسي */
         .main-card { 
             border: none; border-radius: 25px; 
             background: #ffffff; 
@@ -26,7 +25,6 @@
             background: var(--primary-grad); color: white; padding: 20px; text-align: center;
         }
 
-        /* نظام البحث */
         .search-box {
             position: relative; margin-bottom: 25px;
         }
@@ -41,7 +39,6 @@
             position: absolute; right: 20px; top: 15px; color: #aaa;
         }
 
-        /* تنسيق السجلات */
         .section-title {
             font-size: 1rem; font-weight: 800; margin: 30px 0 15px;
             display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px;
@@ -98,9 +95,12 @@
                             <label class="form-label fw-bold small text-muted">الملاحظة</label>
                             <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
                         </div>
-                        <div class="col-12 mt-4 text-center">
-                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
+                        <div class="col-12 mt-4 text-center d-flex gap-2">
+                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
                                 <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
+                            </button>
+                            <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0">
+                                <i class="fa-solid fa-file-excel"></i>
                             </button>
                         </div>
                     </div>
@@ -195,9 +195,11 @@
             await updateDoc(doc(db, "smart_records", editingId), {
                 date: dateVal, content: content, lastEdit: lastEditTime
             });
+            // 🔄 إرجاع الزر لحالته الأصلية
             editingId = null;
             btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة';
-            btn.className = "btn btn-primary px-5 py-2 rounded-pill fw-bold shadow-lg border-0";
+            btn.style.background = ""; // يمسح اللون اليدوي ليعود للتدرج في الـ CSS
+            btn.classList.add('btn-primary');
             document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
         } else {
             await addDoc(recordsCol, {
@@ -244,6 +246,13 @@
     function createCard(r, statusClass) {
         const div = document.createElement('div');
         div.className = `card record-card p-3 shadow-sm ${statusClass}`;
+        
+        // منع التعديل في حالة المكتملة
+        const editBtn = !r.isCompleted ? `
+            <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')">
+                <i class="fa-solid fa-pen-nib"></i>
+            </button>` : '';
+
         div.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date}</span>
@@ -251,15 +260,13 @@
                     <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!r.isCompleted})">
                         <i class="fa-solid ${r.isCompleted ? 'fa-rotate-left' : 'fa-check'}"></i>
                     </button>
-                    <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')">
-                        <i class="fa-solid fa-pen-nib"></i>
-                    </button>
+                    ${editBtn}
                     <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
             </div>
-            <p class="mb-1 fw-bold text-dark fs-6">${r.content}</p>
+            <p class="mb-1 fw-bold text-dark fs-6 text-break">${r.content}</p>
             ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
         `;
         return div;
@@ -276,6 +283,19 @@
         btn.style.background = "#f39c12"; 
         document.getElementById('formTitle').innerText = "تعديل السجل الحالي";
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.exportToExcel = () => {
+        if (allRecords.length === 0) return alert("لا يوجد بيانات لتصديرها");
+        let csv = "\ufeffالتاريخ,المحتوى,الحالة,آخر تعديل\n";
+        allRecords.forEach(r => {
+            csv += `"${r.date}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}","${r.lastEdit || 'أصلي'}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `سجل_سحابي_${new Date().toLocaleDateString()}.csv`;
+        link.click();
     };
 
     window.toggleComplete = async (id, status) => {
