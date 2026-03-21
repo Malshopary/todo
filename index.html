@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مفكرتي السحابية الآمنة | Secure Cloud Diary</title>
+    <title>مفكرتي السحابية الآمنة | DailyApp Secure</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,30 +13,18 @@
             --primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --accent-color: #764ba2;
         }
-        body { background-color: #f4f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+        body { background-color: #f4f7fa; font-family: 'Segoe UI', Tahoma, sans-serif; color: #333; }
         
-        /* شاشة تسجيل الدخول */
-        #authSection {
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
-        }
-        .auth-card {
-            width: 100%; max-width: 400px; border: none; border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: white; padding: 30px;
-        }
+        #authSection { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .auth-card { width: 100%; max-width: 400px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: white; padding: 30px; border: none; }
 
-        /* تنسيقات التطبيق الرئيسي */
         #mainApp { display: none; }
-        .main-card { 
-            border: none; border-radius: 25px; background: #ffffff; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05); overflow: hidden;
-        }
+        .main-card { border: none; border-radius: 25px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.05); overflow: hidden; }
         .card-header-grad { background: var(--primary-grad); color: white; padding: 20px; text-align: center; }
-        .record-card {
-            border: none; border-radius: 18px; background: white; margin-bottom: 15px; 
-            transition: 0.3s; border-right: 6px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
-        }
-        .status-today { border-right-color: #007bff; }
-        .btn-action { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; background: #f8f9fa; }
+        
+        .record-card { border: none; border-radius: 18px; background: white; margin-bottom: 15px; border-right: 6px solid #764ba2; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .btn-action { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; background: #f8f9fa; transition: 0.2s; }
+        .btn-action:hover { transform: scale(1.1); background: #eee; }
     </style>
 </head>
 <body>
@@ -55,13 +43,13 @@
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <span id="userEmailBadge" class="badge bg-light text-dark p-2 px-3 border rounded-pill"></span>
-                <button onclick="handleLogout()" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> خروج</button>
+                <span id="userEmailBadge" class="badge bg-white text-dark p-2 px-3 border rounded-pill shadow-sm"></span>
+                <button onclick="handleLogout()" class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm"><i class="fa-solid fa-power-off me-1"></i> خروج</button>
             </div>
 
-            <div class="card main-card mb-5">
+            <div class="card main-card mb-4">
                 <div class="card-header-grad">
-                    <h4 class="mb-0 fw-bold" id="formTitle"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك الخاصة</h4>
+                    <h4 class="mb-0 fw-bold" id="formTitle">سجل أفكارك ومهامك</h4>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-3">
@@ -69,17 +57,16 @@
                             <input type="date" id="dateInput" class="form-control border-0 bg-light rounded-3">
                         </div>
                         <div class="col-md-8">
-                            <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="اكتب ملاحظتك السرية هنا...">
+                            <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
                         </div>
-                        <div class="col-12 mt-4 d-flex gap-2">
-                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow border-0" style="background: var(--primary-grad);">حفظ في السحابة</button>
+                        <div class="col-12 mt-4">
+                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary w-100 py-2 rounded-pill fw-bold shadow border-0" style="background: var(--primary-grad);">حفظ في السحابة</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="recordsList">
-                </div>
+            <div id="recordsList"></div>
         </div>
     </div>
 </div>
@@ -89,7 +76,6 @@
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCQNTHHl-vNcKzIvprqyHYzJQv2tU0Y0sg",
         authDomain: "dailyapp-3f2ce.firebaseapp.com",
@@ -110,13 +96,15 @@
     let editingId = null;
     let unsub = null;
 
-    // مراقبة حالة المستخدم (هل سجل دخول أم لا؟)
+    const todayStr = new Date().toISOString().split('T')[0];
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
             document.getElementById('authSection').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userEmailBadge').innerText = user.email;
+            document.getElementById('dateInput').value = todayStr;
             startListening();
         } else {
             currentUser = null;
@@ -126,7 +114,6 @@
         }
     });
 
-    // تبديل بين "دخول" و "تسجيل جديد"
     window.toggleAuthMode = () => {
         isLoginMode = !isLoginMode;
         document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'حساب جديد';
@@ -136,10 +123,10 @@
             'لديك حساب بالفعل؟ <a href="#" onclick="toggleAuthMode()">سجل دخول</a>';
     };
 
-    // معالجة الدخول أو التسجيل
     window.handleAuth = async () => {
         const email = document.getElementById('emailInput').value;
         const pass = document.getElementById('passInput').value;
+        if(!email || !pass) return alert("يرجى إدخال البيانات");
         try {
             if (isLoginMode) await signInWithEmailAndPassword(auth, email, pass);
             else await createUserWithEmailAndPassword(auth, email, pass);
@@ -148,8 +135,8 @@
 
     window.handleLogout = () => signOut(auth);
 
-    // جلب البيانات الخاصة بالمستخدم الحالي فقط بناءً على الـ UID
     function startListening() {
+        // جلب البيانات الخاصة بالمستخدم المسجل حالياً فقط
         const q = query(recordsCol, where("userId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         unsub = onSnapshot(q, (snapshot) => {
             const list = document.getElementById('recordsList');
@@ -157,7 +144,7 @@
             snapshot.docs.forEach(d => {
                 const data = d.data();
                 const div = document.createElement('div');
-                div.className = "card record-card p-3 shadow-sm status-today";
+                div.className = "card record-card p-3 shadow-sm mb-3";
                 div.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${data.date}</span>
@@ -166,7 +153,7 @@
                             <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${d.id}')"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                    <p class="mb-0 fw-bold">${data.content}</p>
+                    <p class="mb-0 fw-bold text-dark" style="white-space: pre-wrap;">${data.content}</p>
                 `;
                 list.appendChild(div);
             });
@@ -180,21 +167,25 @@
         const btn = document.getElementById('saveBtn');
 
         if (!content) return;
+        if (dateVal < todayStr && !editingId) return alert("لا يمكن التسجيل في الماضي");
 
-        if (editingId) {
-            await updateDoc(doc(db, "smart_records", editingId), { date: dateVal, content: content });
-            editingId = null;
-            btn.innerHTML = "حفظ في السحابة";
-            btn.style.background = "var(--primary-grad)";
-        } else {
-            await addDoc(recordsCol, {
-                userId: currentUser.uid, // ربط الملاحظة بالمستخدم الحالي
-                date: dateVal,
-                content: content,
-                timestamp: Date.now()
-            });
-        }
-        contentInput.value = "";
+        try {
+            if (editingId) {
+                await updateDoc(doc(db, "smart_records", editingId), { date: dateVal, content: content });
+                editingId = null;
+                btn.innerHTML = "حفظ في السحابة";
+                btn.style.background = "var(--primary-grad)";
+                document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
+            } else {
+                await addDoc(recordsCol, {
+                    userId: currentUser.uid,
+                    date: dateVal,
+                    content: content,
+                    timestamp: Date.now()
+                });
+            }
+            contentInput.value = "";
+        } catch (e) { alert("خطأ أثناء الحفظ"); }
     };
 
     window.prepareEdit = (id, date, content) => {
@@ -202,16 +193,15 @@
         document.getElementById('dataInput').value = content;
         editingId = id;
         const btn = document.getElementById('saveBtn');
-        btn.innerHTML = "تحديث السجل";
+        btn.innerHTML = "تحديث السجل الحالي";
         btn.style.background = "#f39c12";
+        document.getElementById('formTitle').innerText = "تعديل الملاحظة";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.deleteRecord = async (id) => {
-        if (confirm("هل تريد الحذف؟")) await deleteDoc(doc(db, "smart_records", id));
+        if (confirm("هل أنت متأكد من الحذف؟")) await deleteDoc(doc(db, "smart_records", id));
     };
-
-    // ضبط تاريخ اليوم تلقائياً
-    document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
