@@ -3,81 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مفكرتي اليومية الذكية | نظام البحث المطور</title>
+    <title>مدير السجلات اليومية الاحترافي</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .main-card { border: none; border-radius: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .record-card { transition: all 0.3s ease; border-right: 6px solid #0d6efd; border-radius: 10px; }
-        .record-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .meta-text { font-size: 0.82rem; color: #6c757d; }
-        .search-container { position: sticky; top: 10px; z-index: 100; margin-bottom: 20px; }
-        .search-input { border-radius: 25px; padding-right: 40px; border: 2px solid #dee2e6; }
-        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
-        .btn-export { background-color: #198754; color: white; border-radius: 8px; }
-        .btn-export:hover { background-color: #157347; color: white; }
-        .highlight { background-color: #fff3cd; padding: 2px; }
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .main-card { border: none; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .nav-pills .nav-link { border-radius: 10px; font-weight: bold; color: #4a5568; }
+        .nav-pills .nav-link.active { background-color: #0d6efd; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); }
+        .record-card { transition: all 0.3s ease; border-right: 5px solid #0d6efd; border-radius: 12px; }
+        .record-card.completed { border-right-color: #198754; opacity: 0.85; }
+        .meta-text { font-size: 0.8rem; color: #718096; }
+        .edit-info { font-size: 0.75rem; color: #dd6b20; background: #fffaf0; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+        .search-input { border-radius: 20px; border: 2px solid #e2e8f0; }
+        .btn-action { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <div class="col-md-9 col-lg-8">
             
-            <div class="card main-card p-4 mb-4 border-top border-primary border-5">
-                <h3 class="text-center mb-4 fw-bold text-dark">
-                    <i class="fa-solid fa-circle-plus text-primary me-2"></i>سجل بياناتك اليوم
-                </h3>
-                
+            <div class="card main-card p-4 mb-4 border-0">
+                <h4 class="fw-bold mb-4 text-primary text-center"><i class="fa-solid fa-file-pen me-2"></i>تسجيل بيانات جديدة</h4>
                 <div class="row g-3">
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold">📅 تاريخ السجل</label>
-                        <input type="date" id="dateInput" class="form-control form-control-lg shadow-sm">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-secondary">التاريخ</label>
+                        <input type="date" id="dateInput" class="form-control shadow-sm border-0 bg-light">
                     </div>
                     <div class="col-12">
-                        <label class="form-label fw-bold">✍️ ماذا حدث اليوم؟</label>
-                        <textarea id="dataInput" class="form-control shadow-sm" rows="3" placeholder="اكتب الملاحظات أو الأرقام هنا..."></textarea>
+                        <textarea id="dataInput" class="form-control shadow-sm border-0 bg-light" rows="3" placeholder="اكتب ملاحظاتك اليومية هنا..."></textarea>
                     </div>
-                    <div class="col-12 d-grid gap-2 mt-4">
-                        <button id="saveBtn" onclick="saveData()" class="btn btn-primary btn-lg shadow">
-                            <i class="fa-solid fa-check-double me-1"></i> حفظ السجل الآن
+                    <div class="col-12 d-flex gap-2">
+                        <button id="saveBtn" onclick="saveData()" class="btn btn-primary px-4 py-2 fw-bold shadow-sm w-100">
+                            <i class="fa-solid fa-plus-circle me-1"></i> حفظ السجل
                         </button>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <button onclick="exportToCSV()" class="btn btn-export w-100 py-2 shadow-sm text-nowrap">
-                                    <i class="fa-solid fa-file-csv me-1"></i> تصدير Excel
-                                </button>
-                            </div>
-                            <div class="col-6">
-                                <button onclick="clearAllData()" class="btn btn-outline-danger w-100 py-2 shadow-sm text-nowrap">
-                                    <i class="fa-solid fa-trash-can me-1"></i> مسح الكل
-                                </button>
-                            </div>
-                        </div>
+                        <button onclick="exportToCSV()" class="btn btn-success px-4 py-2 fw-bold shadow-sm">
+                            <i class="fa-solid fa-file-export"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <hr class="my-4">
-
-            <div class="search-container">
-                <div class="position-relative">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="searchInput" class="form-control form-control-lg search-input shadow-sm" 
-                           placeholder="ابحث بالتاريخ أو بالكلمات..." onkeyup="displayData()">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                <ul class="nav nav-pills bg-white p-1 rounded-3 shadow-sm" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-pending" onclick="switchTab('pending')">
+                            المحفوظة <span class="badge bg-primary ms-1" id="count-pending">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-completed" onclick="switchTab('completed')">
+                            المكتملة <span class="badge bg-success ms-1" id="count-completed">0</span>
+                        </button>
+                    </li>
+                </ul>
+                <div class="position-relative w-100" style="max-width: 300px;">
+                    <input type="text" id="searchInput" class="form-control search-input bg-white ps-4" placeholder="بحث..." onkeyup="renderData()">
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-                <h5 class="mb-0 fw-bold"><i class="fa-solid fa-list-check text-secondary me-2"></i>السجلات المحفوظة</h5>
-                <span id="countBadge" class="badge bg-dark rounded-pill">0</span>
-            </div>
-
-            <div id="dataList">
+            <div id="dataContainer">
                 </div>
 
         </div>
@@ -87,11 +76,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    let currentTab = 'pending';
     let editingIndex = -1;
 
     window.onload = function() {
         document.getElementById('dateInput').valueAsDate = new Date();
-        displayData();
+        renderData();
     };
 
     function getCurrentTime() {
@@ -99,152 +89,146 @@
     }
 
     function getCurrentDateTime() {
-        let now = new Date();
-        return now.toLocaleDateString('ar-EG') + ' ' + getCurrentTime();
+        return new Date().toLocaleDateString('ar-EG') + ' ' + getCurrentTime();
     }
 
     function saveData() {
         const date = document.getElementById('dateInput').value;
         const data = document.getElementById('dataInput').value.trim();
 
-        if(!date || !data) {
-            alert('يرجى كتابة التفاصيل أولاً');
-            return;
-        }
+        if(!date || !data) return alert('أكمل الخانات أولاً');
 
-        let savedRecords = JSON.parse(localStorage.getItem('myDailyApp_V3')) || [];
+        let allRecords = JSON.parse(localStorage.getItem('mySmartLog')) || [];
 
         if (editingIndex === -1) {
-            const newRecord = {
+            allRecords.unshift({
+                id: Date.now(),
                 date: date,
-                entryTime: getCurrentTime(),
+                time: getCurrentTime(),
                 content: data,
-                lastEdit: getCurrentDateTime()
-            };
-            savedRecords.unshift(newRecord);
+                isCompleted: false,
+                lastEdit: null // إخفاء التعديل في البداية
+            });
         } else {
-            savedRecords[editingIndex].date = date;
-            savedRecords[editingIndex].content = data;
-            savedRecords[editingIndex].lastEdit = getCurrentDateTime();
+            allRecords[editingIndex].date = date;
+            allRecords[editingIndex].content = data;
+            allRecords[editingIndex].lastEdit = getCurrentDateTime();
             
             editingIndex = -1;
-            const btn = document.getElementById('saveBtn');
-            btn.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> حفظ السجل الآن';
-            btn.className = "btn btn-primary btn-lg shadow";
+            document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus-circle me-1"></i> حفظ السجل';
+            document.getElementById('saveBtn').classList.replace('btn-warning', 'btn-primary');
         }
 
-        localStorage.setItem('myDailyApp_V3', JSON.stringify(savedRecords));
+        localStorage.setItem('mySmartLog', JSON.stringify(allRecords));
         document.getElementById('dataInput').value = '';
-        displayData();
+        renderData();
     }
 
-    function displayData() {
-        const savedRecords = JSON.parse(localStorage.getItem('myDailyApp_V3')) || [];
+    function renderData() {
+        const allRecords = JSON.parse(localStorage.getItem('mySmartLog')) || [];
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const list = document.getElementById('dataList');
+        const container = document.getElementById('dataContainer');
         
-        let filteredRecords = savedRecords.filter(record => 
-            record.content.toLowerCase().includes(searchTerm) || 
-            record.date.includes(searchTerm)
+        // تصفية حسب التبويب والبحث
+        let filtered = allRecords.filter(r => 
+            (currentTab === 'completed' ? r.isCompleted : !r.isCompleted) &&
+            (r.content.toLowerCase().includes(searchTerm) || r.date.includes(searchTerm))
         );
 
-        document.getElementById('countBadge').innerText = filteredRecords.length;
-        list.innerHTML = '';
+        // تحديث العدادات
+        document.getElementById('count-pending').innerText = allRecords.filter(r => !r.isCompleted).length;
+        document.getElementById('count-completed').innerText = allRecords.filter(r => r.isCompleted).length;
 
-        if(filteredRecords.length === 0) {
-            list.innerHTML = `<div class="alert alert-warning text-center border-0 shadow-sm rounded-3">
-                                <i class="fa-solid fa-circle-exclamation me-2"></i> لم يتم العثور على نتائج.
-                              </div>`;
+        container.innerHTML = '';
+
+        if(filtered.length === 0) {
+            container.innerHTML = '<div class="text-center py-5 text-muted small">لا توجد سجلات حالياً</div>';
             return;
         }
 
-        filteredRecords.forEach((record, actualIndex) => {
-            // نحتاج لإيجاد الفهرس الحقيقي في المصفوفة الأصلية لعملية التعديل والحذف
-            const originalIndex = savedRecords.findIndex(r => r === record);
-
-            const div = document.createElement('div');
-            div.className = 'card record-card p-3 mb-3 bg-white shadow-sm border-0';
-            div.innerHTML = `
-                <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
-                    <div class="meta-text fw-bold">
-                        <span class="text-primary"><i class="fa-solid fa-calendar-week"></i> ${record.date}</span>
-                        <span class="mx-2 text-muted">|</span> 
-                        <span class="text-secondary"><i class="fa-solid fa-clock"></i> ${record.entryTime}</span>
-                    </div>
+        filtered.forEach((record) => {
+            const originalIndex = allRecords.findIndex(r => r.id === record.id);
+            const card = document.createElement('div');
+            card.className = `card record-card p-3 mb-3 border-0 bg-white shadow-sm ${record.isCompleted ? 'completed' : ''}`;
+            
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="meta-text fw-bold text-primary"><i class="fa-solid fa-calendar-day me-1"></i> ${record.date} | ${record.time}</span>
+                    ${record.lastEdit ? `<span class="edit-info"><i class="fa-solid fa-history me-1"></i> تم التعديل: ${record.lastEdit}</span>` : ''}
                 </div>
-                <p class="mb-3 text-dark text-break" style="white-space: pre-line;">${record.content}</p>
-                <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
-                    <span class="meta-text italic" style="font-size: 0.75rem;">
-                         آخر تعديل: ${record.lastEdit}
-                    </span>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light text-warning btn-sm border" onclick="editData(${originalIndex})">
-                            <i class="fa-solid fa-pen-to-square"></i>
+                <p class="mb-3 text-dark fs-6" style="white-space: pre-line;">${record.content}</p>
+                <div class="d-flex justify-content-end gap-2 border-top pt-2">
+                    ${!record.isCompleted ? `
+                        <button class="btn btn-outline-success btn-action" onclick="toggleStatus(${originalIndex})" title="نقل للمكتملة">
+                            <i class="fa-solid fa-check"></i>
                         </button>
-                        <button class="btn btn-light text-danger btn-sm border" onclick="deleteData(${originalIndex})">
-                            <i class="fa-solid fa-trash-can"></i>
+                        <button class="btn btn-outline-warning btn-action" onclick="prepareEdit(${originalIndex})" title="تعديل">
+                            <i class="fa-solid fa-pen"></i>
                         </button>
-                    </div>
+                    ` : `
+                        <button class="btn btn-outline-secondary btn-action" onclick="toggleStatus(${originalIndex})" title="إعادة للمحفوظة">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    `}
+                    <button class="btn btn-outline-danger btn-action" onclick="deleteRecord(${originalIndex})" title="حذف">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
                 </div>
             `;
-            list.appendChild(div);
+            container.appendChild(card);
         });
     }
 
-    function editData(index) {
-        const savedRecords = JSON.parse(localStorage.getItem('myDailyApp_V3')) || [];
-        const record = savedRecords[index];
-        
-        document.getElementById('dateInput').value = record.date;
-        document.getElementById('dataInput').value = record.content;
-        
+    function toggleStatus(index) {
+        let allRecords = JSON.parse(localStorage.getItem('mySmartLog'));
+        allRecords[index].isCompleted = !allRecords[index].isCompleted;
+        localStorage.setItem('mySmartLog', JSON.stringify(allRecords));
+        renderData();
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('tab-pending').classList.toggle('active', tab === 'pending');
+        document.getElementById('tab-completed').classList.toggle('active', tab === 'completed');
+        renderData();
+    }
+
+    function prepareEdit(index) {
+        let allRecords = JSON.parse(localStorage.getItem('mySmartLog'));
+        const r = allRecords[index];
+        document.getElementById('dateInput').value = r.date;
+        document.getElementById('dataInput').value = r.content;
         editingIndex = index;
-        const btn = document.getElementById('saveBtn');
-        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate me-1"></i> تحديث السجل الحالي';
-        btn.className = "btn btn-warning btn-lg shadow text-dark fw-bold";
         
+        const btn = document.getElementById('saveBtn');
+        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate me-1"></i> تحديث التعديلات';
+        btn.classList.replace('btn-primary', 'btn-warning');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function deleteData(index) {
-        if(confirm("هل أنت متأكد من رغبتك في حذف هذا السجل نهائياً؟")) {
-            let savedRecords = JSON.parse(localStorage.getItem('myDailyApp_V3')) || [];
-            savedRecords.splice(index, 1);
-            localStorage.setItem('myDailyApp_V3', JSON.stringify(savedRecords));
-            displayData();
-        }
-    }
-
-    function clearAllData() {
-        if(confirm("تحذير: سيتم مسح كافة البيانات المسجلة نهائياً. هل أنت متأكد؟")) {
-            localStorage.removeItem('myDailyApp_V3');
-            displayData();
+    function deleteRecord(index) {
+        if(confirm("حذف السجل نهائياً؟")) {
+            let allRecords = JSON.parse(localStorage.getItem('mySmartLog'));
+            allRecords.splice(index, 1);
+            localStorage.setItem('mySmartLog', JSON.stringify(allRecords));
+            renderData();
         }
     }
 
     function exportToCSV() {
-        const savedRecords = JSON.parse(localStorage.getItem('myDailyApp_V3')) || [];
-        if (savedRecords.length === 0) {
-            alert("لا توجد بيانات لتصديرها.");
-            return;
-        }
-
-        let csvContent = "\ufeff"; 
-        csvContent += "التاريخ,الوقت,المحتوى,آخر تعديل\n";
-
-        savedRecords.forEach(r => {
-            let row = `"${r.date}","${r.entryTime}","${r.content.replace(/"/g, '""')}","${r.lastEdit}"`;
-            csvContent += row + "\n";
+        const allRecords = JSON.parse(localStorage.getItem('mySmartLog')) || [];
+        if (allRecords.length === 0) return alert("لا بيانات!");
+        
+        let csv = "\ufeffالتاريخ,الوقت,المحتوى,الحالة,آخر تعديل\n";
+        allRecords.forEach(r => {
+            csv += `"${r.date}","${r.time}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}","${r.lastEdit || 'أصلي'}"\n`;
         });
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `سجل_يومي_مطور_${new Date().toLocaleDateString()}.csv`);
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = "سجلات_يومية.csv";
         link.click();
-        document.body.removeChild(link);
     }
 </script>
 
