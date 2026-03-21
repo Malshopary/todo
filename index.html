@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مفكرتي الذكية | Smart Cloud Diary</title>
+    <title>مفكرتي السحابية الآمنة | Secure Cloud Diary</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,327 +15,202 @@
         }
         body { background-color: #f4f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
         
+        /* شاشة تسجيل الدخول */
+        #authSection {
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
+        }
+        .auth-card {
+            width: 100%; max-width: 400px; border: none; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); background: white; padding: 30px;
+        }
+
+        /* تنسيقات التطبيق الرئيسي */
+        #mainApp { display: none; }
         .main-card { 
-            border: none; border-radius: 25px; 
-            background: #ffffff; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            overflow: hidden;
+            border: none; border-radius: 25px; background: #ffffff; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); overflow: hidden;
         }
-        .card-header-grad {
-            background: var(--primary-grad); color: white; padding: 20px; text-align: center;
-        }
-
-        .search-box {
-            position: relative; margin-bottom: 25px;
-        }
-        .search-box input {
-            border-radius: 50px; padding-right: 45px; border: 2px solid #eee;
-            transition: all 0.3s ease; height: 50px;
-        }
-        .search-box input:focus {
-            border-color: var(--accent-color); box-shadow: 0 0 15px rgba(118, 75, 162, 0.1);
-        }
-        .search-icon {
-            position: absolute; right: 20px; top: 15px; color: #aaa;
-        }
-
-        .section-title {
-            font-size: 1rem; font-weight: 800; margin: 30px 0 15px;
-            display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px;
-        }
-        .section-title i { margin-left: 10px; }
-        
+        .card-header-grad { background: var(--primary-grad); color: white; padding: 20px; text-align: center; }
         .record-card {
-            border: none; border-radius: 18px; background: white;
-            margin-bottom: 15px; transition: all 0.3s ease;
-            border-right: 6px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            border: none; border-radius: 18px; background: white; margin-bottom: 15px; 
+            transition: 0.3s; border-right: 6px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
-        .record-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-        
         .status-today { border-right-color: #007bff; }
-        .status-future { border-right-color: #6f42c1; }
-        .status-past { border-right-color: #dc3545; }
-        .status-completed { border-right-color: #198754; background: #fafffa; opacity: 0.9; }
-
-        .btn-action {
-            width: 35px; height: 35px; border-radius: 10px; display: flex;
-            align-items: center; justify-content: center; transition: 0.2s;
-            border: none; background: #f8f9fa;
-        }
-        .btn-action:hover { background: #eee; transform: scale(1.1); }
-
-        .nav-pills .nav-link {
-            border-radius: 50px; padding: 8px 25px; font-weight: 600; color: #666;
-        }
-        .nav-pills .nav-link.active { background: var(--primary-grad); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
-        
-        .edit-badge {
-            font-size: 0.7rem; color: #f39c12; background: #fef5e7;
-            padding: 3px 10px; border-radius: 50px; display: inline-block;
-        }
+        .btn-action { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; border: none; background: #f8f9fa; }
     </style>
 </head>
 <body>
 
-<div class="container py-5">
+<div id="authSection">
+    <div class="auth-card text-center">
+        <h3 class="fw-bold mb-4" id="authTitle">تسجيل الدخول</h3>
+        <input type="email" id="emailInput" class="form-control mb-3" placeholder="البريد الإلكتروني">
+        <input type="password" id="passInput" class="form-control mb-4" placeholder="كلمة المرور">
+        <button onclick="handleAuth()" id="authBtn" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mb-3" style="background: var(--primary-grad); border:none;">دخول</button>
+        <p class="small text-muted" id="toggleAuthText">ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()">سجل الآن</a></p>
+    </div>
+</div>
+
+<div id="mainApp" class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
-            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <span id="userEmailBadge" class="badge bg-light text-dark p-2 px-3 border rounded-pill"></span>
+                <button onclick="handleLogout()" class="btn btn-sm btn-outline-danger rounded-pill px-3"><i class="fa-solid fa-right-from-bracket me-1"></i> خروج</button>
+            </div>
+
             <div class="card main-card mb-5">
                 <div class="card-header-grad">
-                    <h4 class="mb-0 fw-bold" id="formTitle"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك ومهامك</h4>
+                    <h4 class="mb-0 fw-bold" id="formTitle"><i class="fa-solid fa-feather-pointed me-2"></i>سجل أفكارك الخاصة</h4>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label fw-bold small text-muted">التاريخ</label>
                             <input type="date" id="dateInput" class="form-control border-0 bg-light rounded-3">
                         </div>
                         <div class="col-md-8">
-                            <label class="form-label fw-bold small text-muted">الملاحظة</label>
-                            <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
+                            <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="اكتب ملاحظتك السرية هنا...">
                         </div>
-                        <div class="col-12 mt-4 text-center d-flex gap-2">
-                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">
-                                <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
-                            </button>
-                            <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0">
-                                <i class="fa-solid fa-file-excel"></i>
-                            </button>
+                        <div class="col-12 mt-4 d-flex gap-2">
+                            <button id="saveBtn" onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow border-0" style="background: var(--primary-grad);">حفظ في السحابة</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" id="searchInput" class="form-control shadow-sm" placeholder="ابحث في سجلاتك..." onkeyup="renderData()">
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <ul class="nav nav-pills bg-white shadow-sm p-1 rounded-pill" id="pills-tab">
-                    <li class="nav-item">
-                        <button class="nav-link active" onclick="setTab('pending')">المحفوظة</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" onclick="setTab('completed')">المكتملة</button>
-                    </li>
-                </ul>
-                <div class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3 fw-bold" id="currentDateDisplay"></div>
-            </div>
-
-            <div id="timelineContainer">
-                <div id="section-past-div" style="display:none;">
-                    <div class="section-title text-danger"><i class="fa-solid fa-hourglass-end"></i> سجلات سابقة</div>
-                    <div id="list-past"></div>
+            <div id="recordsList">
                 </div>
-                <div id="section-today-div" style="display:none;">
-                    <div class="section-title text-primary"><i class="fa-solid fa-calendar-day"></i> قائمة اليوم</div>
-                    <div id="list-today"></div>
-                </div>
-                <div id="section-future-div" style="display:none;">
-                    <div class="section-title text-purple" style="color:#764ba2;"><i class="fa-solid fa-forward-step"></i> مهام لاحقاً</div>
-                    <div id="list-future"></div>
-                </div>
-            </div>
-
-            <div id="list-completed" style="display:none;"></div>
-
         </div>
     </div>
 </div>
 
 <script type="module">
-    // 1. تصحيح روابط الاستيراد لتشير إلى الـ Firestore بدلاً من الـ Analytics
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-        getFirestore, 
-        collection, 
-        addDoc, 
-        updateDoc, 
-        deleteDoc, 
-        doc, 
-        query, 
-        orderBy, 
-        onSnapshot 
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
+    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         apiKey: "AIzaSyCQNTHHl-vNcKzIvprqyHYzJQv2tU0Y0sg",
         authDomain: "dailyapp-3f2ce.firebaseapp.com",
         projectId: "dailyapp-3f2ce",
         storageBucket: "dailyapp-3f2ce.firebasestorage.app",
         messagingSenderId: "139456114278",
-        appId: "1:139456114278:web:8620325d20aa72119487a7",
-        measurementId: "G-7KGZYE6TEP"
+        appId: "1:139456114278:web:8620325d20aa72119487a7"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
     const recordsCol = collection(db, "smart_records");
 
-    let currentTab = 'pending';
-    let allRecords = [];
+    let currentUser = null;
+    let isLoginMode = true;
     let editingId = null;
+    let unsub = null;
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    document.getElementById('currentDateDisplay').innerText = todayStr;
-    document.getElementById('dateInput').value = todayStr;
-
-    onSnapshot(query(recordsCol, orderBy("timestamp", "desc")), (snapshot) => {
-        allRecords = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderData();
+    // مراقبة حالة المستخدم (هل سجل دخول أم لا؟)
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userEmailBadge').innerText = user.email;
+            startListening();
+        } else {
+            currentUser = null;
+            document.getElementById('authSection').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            if (unsub) unsub();
+        }
     });
 
-    // تعريف الدوال على نافذة window لتعمل مع الـ onclick في HTML
+    // تبديل بين "دخول" و "تسجيل جديد"
+    window.toggleAuthMode = () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'حساب جديد';
+        document.getElementById('authBtn').innerText = isLoginMode ? 'دخول' : 'إنشاء حساب';
+        document.getElementById('toggleAuthText').innerHTML = isLoginMode ? 
+            'ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()">سجل الآن</a>' : 
+            'لديك حساب بالفعل؟ <a href="#" onclick="toggleAuthMode()">سجل دخول</a>';
+    };
+
+    // معالجة الدخول أو التسجيل
+    window.handleAuth = async () => {
+        const email = document.getElementById('emailInput').value;
+        const pass = document.getElementById('passInput').value;
+        try {
+            if (isLoginMode) await signInWithEmailAndPassword(auth, email, pass);
+            else await createUserWithEmailAndPassword(auth, email, pass);
+        } catch (e) { alert("خطأ: " + e.message); }
+    };
+
+    window.handleLogout = () => signOut(auth);
+
+    // جلب البيانات الخاصة بالمستخدم الحالي فقط بناءً على الـ UID
+    function startListening() {
+        const q = query(recordsCol, where("userId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        unsub = onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('recordsList');
+            list.innerHTML = "";
+            snapshot.docs.forEach(d => {
+                const data = d.data();
+                const div = document.createElement('div');
+                div.className = "card record-card p-3 shadow-sm status-today";
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${data.date}</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${d.id}', '${data.date}', '${data.content}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${d.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <p class="mb-0 fw-bold">${data.content}</p>
+                `;
+                list.appendChild(div);
+            });
+        });
+    }
+
     window.handleSave = async () => {
         const dateVal = document.getElementById('dateInput').value;
         const contentInput = document.getElementById('dataInput');
         const content = contentInput.value.trim();
-
-        if(!dateVal || !content) return;
-        
-        // منع الإضافة في الماضي فقط عند الإضافة الجديدة وليس التعديل
-        if(dateVal < todayStr && !editingId) {
-            alert("لا يمكنك التسجيل في الماضي!");
-            return;
-        }
-
         const btn = document.getElementById('saveBtn');
 
-        try {
-            if (editingId) {
-                const now = new Date();
-                const lastEditTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                
-                await updateDoc(doc(db, "smart_records", editingId), {
-                    date: dateVal, 
-                    content: content, 
-                    lastEdit: lastEditTime
-                });
+        if (!content) return;
 
-                editingId = null;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة';
-                btn.style.background = "var(--primary-grad)";
-                document.getElementById('formTitle').innerText = "سجل أفكارك ومهامك";
-            } else {
-                await addDoc(recordsCol, {
-                    date: dateVal, 
-                    content: content, 
-                    isCompleted: false, 
-                    timestamp: Date.now(), 
-                    lastEdit: null
-                });
-            }
-            contentInput.value = ""; // تفريغ الخانة
-        } catch (e) {
-            console.error("Error: ", e);
-            alert("حدث خطأ أثناء الحفظ");
-        }
-    };
-
-    window.renderData = () => {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const lists = {
-            past: document.getElementById('list-past'),
-            today: document.getElementById('list-today'),
-            future: document.getElementById('list-future'),
-            completed: document.getElementById('list-completed')
-        };
-        const timeline = document.getElementById('timelineContainer');
-
-        Object.values(lists).forEach(l => l.innerHTML = "");
-
-        const filtered = allRecords.filter(r => r.content.toLowerCase().includes(search));
-
-        if (currentTab === 'completed') {
-            timeline.style.display = 'none';
-            lists.completed.style.display = 'block';
-            filtered.filter(r => r.isCompleted).forEach(r => lists.completed.appendChild(createCard(r, 'status-completed')));
+        if (editingId) {
+            await updateDoc(doc(db, "smart_records", editingId), { date: dateVal, content: content });
+            editingId = null;
+            btn.innerHTML = "حفظ في السحابة";
+            btn.style.background = "var(--primary-grad)";
         } else {
-            timeline.style.display = 'block';
-            lists.completed.style.display = 'none';
-            filtered.filter(r => !r.isCompleted).forEach(r => {
-                if (r.date === todayStr) lists.today.appendChild(createCard(r, 'status-today'));
-                else if (r.date > todayStr) lists.future.appendChild(createCard(r, 'status-future'));
-                else lists.past.appendChild(createCard(r, 'status-past'));
+            await addDoc(recordsCol, {
+                userId: currentUser.uid, // ربط الملاحظة بالمستخدم الحالي
+                date: dateVal,
+                content: content,
+                timestamp: Date.now()
             });
-
-            document.getElementById('section-past-div').style.display = lists.past.children.length ? 'block' : 'none';
-            document.getElementById('section-today-div').style.display = lists.today.children.length ? 'block' : 'none';
-            document.getElementById('section-future-div').style.display = lists.future.children.length ? 'block' : 'none';
         }
+        contentInput.value = "";
     };
 
-    function createCard(r, statusClass) {
-        const div = document.createElement('div');
-        div.className = `card record-card p-3 shadow-sm ${statusClass}`;
-        
-        const editBtn = !r.isCompleted ? `
-            <button class="btn-action text-warning shadow-sm" onclick="prepareEdit('${r.id}')">
-                <i class="fa-solid fa-pen-nib"></i>
-            </button>` : '';
-
-        div.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date}</span>
-                <div class="d-flex gap-2">
-                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!r.isCompleted})">
-                        <i class="fa-solid ${r.isCompleted ? 'fa-rotate-left' : 'fa-check'}"></i>
-                    </button>
-                    ${editBtn}
-                    <button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </div>
-            </div>
-            <p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p>
-            ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
-        `;
-        return div;
-    }
-
-    window.prepareEdit = (id) => {
-        const r = allRecords.find(item => item.id === id);
-        document.getElementById('dateInput').value = r.date;
-        document.getElementById('dataInput').value = r.content;
+    window.prepareEdit = (id, date, content) => {
+        document.getElementById('dateInput').value = date;
+        document.getElementById('dataInput').value = content;
         editingId = id;
-
         const btn = document.getElementById('saveBtn');
-        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate me-2"></i> تحديث السجل الحالي';
-        btn.style.background = "#f39c12"; 
-        document.getElementById('formTitle').innerText = "تعديل السجل الحالي";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    window.exportToExcel = () => {
-        if (allRecords.length === 0) return alert("لا يوجد بيانات لتصديرها");
-        let csv = "\ufeffالتاريخ,المحتوى,الحالة,آخر تعديل\n";
-        allRecords.forEach(r => {
-            csv += `"${r.date}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}","${r.lastEdit || 'أصلي'}"\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `سجل_سحابي_${new Date().toLocaleDateString()}.csv`;
-        link.click();
-    };
-
-    window.toggleComplete = async (id, status) => {
-        await updateDoc(doc(db, "smart_records", id), { isCompleted: status });
+        btn.innerHTML = "تحديث السجل";
+        btn.style.background = "#f39c12";
     };
 
     window.deleteRecord = async (id) => {
-        if(confirm("هل أنت متأكد من حذف هذا السجل؟")) await deleteDoc(doc(db, "smart_records", id));
+        if (confirm("هل تريد الحذف؟")) await deleteDoc(doc(db, "smart_records", id));
     };
 
-    window.setTab = (tab) => {
-        currentTab = tab;
-        renderData();
-        const btns = document.querySelectorAll('#pills-tab .nav-link');
-        btns[0].classList.toggle('active', tab === 'pending');
-        btns[1].classList.toggle('active', tab === 'completed');
-    };
+    // ضبط تاريخ اليوم تلقائياً
+    document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
