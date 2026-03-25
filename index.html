@@ -25,24 +25,12 @@
             background: var(--primary-grad); color: white; padding: 20px; text-align: center;
         }
 
-        .search-box {
-            position: relative; margin-bottom: 25px;
-        }
-        .search-box input {
-            border-radius: 50px; padding-right: 45px; border: 2px solid #eee;
-            transition: all 0.3s ease; height: 50px;
-        }
-        .search-box input:focus {
-            border-color: var(--accent-color); box-shadow: 0 0 15px rgba(118, 75, 162, 0.1);
-        }
-        .search-icon {
-            position: absolute; right: 20px; top: 15px; color: #aaa;
-        }
+        .search-box { position: relative; margin-bottom: 25px; }
+        .search-box input { border-radius: 50px; padding-right: 45px; border: 2px solid #eee; transition: all 0.3s ease; height: 50px; }
+        .search-box input:focus { border-color: var(--accent-color); box-shadow: 0 0 15px rgba(118, 75, 162, 0.1); }
+        .search-icon { position: absolute; right: 20px; top: 15px; color: #aaa; }
 
-        .section-title {
-            font-size: 1rem; font-weight: 800; margin: 30px 0 15px;
-            display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .section-title { font-size: 1rem; font-weight: 800; margin: 30px 0 15px; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
         .section-title i { margin-left: 10px; }
         
         .record-card {
@@ -70,59 +58,32 @@
         }
         .nav-pills .nav-link.active { background: var(--primary-grad); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
         
-        .count-badge {
-            background: rgba(0,0,0,0.05); color: inherit; padding: 2px 8px; border-radius: 50px; font-size: 0.75rem;
-        }
+        .count-badge { background: rgba(0,0,0,0.05); color: inherit; padding: 2px 8px; border-radius: 50px; font-size: 0.75rem; }
         .active .count-badge { background: rgba(255,255,255,0.2); color: white; }
-
-        .edit-badge {
-            font-size: 0.7rem; color: #f39c12; background: #fef5e7;
-            padding: 3px 10px; border-radius: 50px; display: inline-block;
-        }
 
         #authSection { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .auth-card { width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        .inline-edit-input { border: 2px solid #764ba2; border-radius: 10px; padding: 8px; width: 100%; margin: 5px 0; }
+        .custom-modal-content { border-radius: 15px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .custom-modal-header { background: var(--primary-grad); color: white; border-radius: 15px 15px 0 0; border: none; }
 
-        .custom-modal-header {
-            background: var(--primary-grad);
-            color: white;
-            border-radius: 15px 15px 0 0;
-            border: none;
-        }
-        .custom-modal-content {
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        .btn-confirm-delete {
-            background: #dc3545;
-            color: white;
-            border-radius: 50px;
-            padding: 8px 25px;
-            border: none;
-        }
-
-        /* تنسيق الصورة الشخصية الجديد */
+        /* تنسيق الصورة الشخصية والتحميل */
+        .profile-wrapper { position: relative; width: 100px; height: 100px; }
         .profile-img-container {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            position: relative;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
+            width: 100px; height: 100px; border-radius: 50%; overflow: hidden;
+            border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer; background: #eee; display: flex; align-items: center; justify-content: center; transition: 0.3s;
         }
         .profile-img-container:hover { transform: scale(1.05); filter: brightness(0.9); }
         .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .profile-img-container i { font-size: 40px; color: #ccc; }
+
+        .upload-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); border-radius: 50%;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-size: 0.85rem; font-weight: bold; z-index: 5;
+        }
     </style>
 </head>
 <body>
@@ -143,9 +104,14 @@
             <div class="col-md-10 col-lg-8">
                 <div class="d-flex align-items-center justify-content-between mb-4 bg-white p-3 rounded-4 shadow-sm">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="profile-img-container" onclick="document.getElementById('profileUpload').click()" title="اضغط لتغيير الصورة">
-                            <img id="userAvatar" src="" style="display:none;">
-                            <i id="avatarPlaceholder" class="fa-solid fa-circle-user"></i>
+                        <div class="profile-wrapper">
+                            <div class="profile-img-container" onclick="showPhotoOptions()" title="إدارة الصورة">
+                                <img id="userAvatar" src="" style="display:none;">
+                                <i id="avatarPlaceholder" class="fa-solid fa-circle-user"></i>
+                            </div>
+                            <div id="uploadOverlay" class="upload-overlay">
+                                <span id="uploadPercent">0%</span>
+                            </div>
                         </div>
                         <input type="file" id="profileUpload" style="display:none;" accept="image/*">
                         <div>
@@ -171,12 +137,8 @@
                                 <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
                             </div>
                             <div class="col-12 mt-4 text-center d-flex gap-2">
-                                <button onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);" title="حفظ في السحابة">
-                                    <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
-                                </button>
-                                <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0" title="تصدير Excel">
-                                    <i class="fa-solid fa-file-excel"></i>
-                                </button>
+                                <button onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);">حفظ في السحابة</button>
+                                <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0"><i class="fa-solid fa-file-excel"></i></button>
                             </div>
                         </div>
                     </div>
@@ -188,16 +150,12 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <ul class="nav nav-pills bg-white shadow-sm p-1 rounded-pill" id="pills-tab">
+                    <ul class="nav nav-pills bg-white shadow-sm p-1 rounded-pill">
                         <li class="nav-item">
-                            <button class="nav-link active" onclick="setTab('pending')" title="المحفوظة">
-                                المحفوظة <span class="count-badge" id="pendingCount">0</span>
-                            </button>
+                            <button class="nav-link active" onclick="setTab('pending')">المحفوظة <span class="count-badge" id="pendingCount">0</span></button>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link" onclick="setTab('completed')" title="المكتملة">
-                                المكتملة <span class="count-badge" id="completedCount">0</span>
-                            </button>
+                            <button class="nav-link" onclick="setTab('completed')">المكتملة <span class="count-badge" id="completedCount">0</span></button>
                         </li>
                     </ul>
                     <div class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3 fw-bold" id="currentDateDisplay"></div>
@@ -214,16 +172,31 @@
     </div>
 </div>
 
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content custom-modal-content">
+      <div class="modal-header custom-modal-header py-2">
+        <h6 class="modal-title fw-bold text-center w-100">إدارة الصورة</h6>
+      </div>
+      <div class="modal-body text-center p-4">
+        <button class="btn btn-outline-primary w-100 mb-2 rounded-pill fw-bold" onclick="triggerUpdatePhoto()">
+            <i class="fa-solid fa-camera me-2"></i>تعديل الصورة
+        </button>
+        <button class="btn btn-outline-danger w-100 rounded-pill fw-bold" onclick="deleteProfilePhoto()">
+            <i class="fa-solid fa-trash-can me-2"></i>حذف الصورة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content custom-modal-content">
-      <div class="modal-header custom-modal-header py-2">
-        <h6 class="modal-title fw-bold">تأكيد الحذف</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+      <div class="modal-header custom-modal-header py-2"><h6 class="modal-title fw-bold">تأكيد الحذف</h6></div>
       <div class="modal-body text-center py-4">
         <i class="fa-solid fa-circle-exclamation text-danger mb-3" style="font-size: 3rem;"></i>
-        <p class="fw-bold text-dark">هل أنت متأكد من حذف هذا السجل نهائياً؟</p>
+        <p class="fw-bold">هل أنت متأكد من حذف هذا السجل نهائياً؟</p>
       </div>
       <div class="modal-footer border-0 justify-content-center pt-0">
         <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">إلغاء</button>
@@ -239,7 +212,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCQNTHHl-vNcKzIvprqyHYzJQv2tU0Y0sg",
@@ -263,6 +236,7 @@
     let unsub = null;
     let isLoginMode = true;
     let recordToDelete = null;
+    const photoModal = new bootstrap.Modal(document.getElementById('photoModal'));
 
     const todayStr = new Date().toISOString().split('T')[0];
     document.getElementById('currentDateDisplay').innerText = todayStr;
@@ -274,18 +248,7 @@
             document.getElementById('authSection').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userEmailBadge').innerText = user.email;
-            
-            // تحديث الصورة الشخصية إذا كانت موجودة
-            const avatar = document.getElementById('userAvatar');
-            const placeholder = document.getElementById('avatarPlaceholder');
-            if(user.photoURL) {
-                avatar.src = user.photoURL;
-                avatar.style.display = 'block';
-                placeholder.style.display = 'none';
-            } else {
-                avatar.style.display = 'none';
-                placeholder.style.display = 'block';
-            }
+            updateAvatarUI(user.photoURL);
             startListening();
         } else {
             currentUser = null;
@@ -295,25 +258,62 @@
         }
     });
 
-    // ميزة رفع الصورة الشخصية
+    function updateAvatarUI(url) {
+        const avatar = document.getElementById('userAvatar');
+        const placeholder = document.getElementById('avatarPlaceholder');
+        if(url) {
+            avatar.src = url;
+            avatar.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            avatar.style.display = 'none';
+            placeholder.style.display = 'block';
+        }
+    }
+
+    // إدارة الصور الشخصية
+    window.showPhotoOptions = () => photoModal.show();
+    window.triggerUpdatePhoto = () => { photoModal.hide(); document.getElementById('profileUpload').click(); };
+
     document.getElementById('profileUpload').addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if(!file || !currentUser) return;
 
         const storageRef = ref(storage, `profiles/${currentUser.uid}`);
-        try {
-            const snapshot = await uploadBytes(storageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            await updateProfile(currentUser, { photoURL: downloadURL });
-            document.getElementById('userAvatar').src = downloadURL;
-            document.getElementById('userAvatar').style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
-            alert("تم تحديث صورتك الشخصية بنجاح!");
-        } catch (err) {
-            alert("فشل رفع الصورة، يرجى المحاولة لاحقاً.");
-        }
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        const overlay = document.getElementById('uploadOverlay');
+        const percentText = document.getElementById('uploadPercent');
+
+        overlay.style.display = 'flex';
+
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                percentText.innerText = Math.round(progress) + "%";
+            }, 
+            (error) => { alert("فشل التحميل"); overlay.style.display = 'none'; }, 
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                await updateProfile(currentUser, { photoURL: downloadURL });
+                updateAvatarUI(downloadURL);
+                overlay.style.display = 'none';
+            }
+        );
     });
 
+    window.deleteProfilePhoto = async () => {
+        if(!currentUser.photoURL) return photoModal.hide();
+        try {
+            const storageRef = ref(storage, `profiles/${currentUser.uid}`);
+            await deleteObject(storageRef);
+        } catch (e) { console.log("File already deleted or missing"); }
+        
+        await updateProfile(currentUser, { photoURL: "" });
+        updateAvatarUI(null);
+        photoModal.hide();
+    };
+
+    // (بقية وظائف Firebase الأساسية)
     function startListening() {
         const q = query(recordsCol, where("userId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         unsub = onSnapshot(q, (snapshot) => {
@@ -348,25 +348,15 @@
     };
 
     window.handleLogout = () => signOut(auth);
-
     window.handleSave = async () => {
         const dateVal = document.getElementById('dateInput').value;
         const contentInput = document.getElementById('dataInput');
         const content = contentInput.value.trim();
         if(!dateVal || !content) return;
-        if(dateVal < todayStr) return alert("لا يمكنك التسجيل في الماضي!");
         try {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            await addDoc(recordsCol, {
-                userId: currentUser.uid,
-                date: dateVal,
-                time: timeStr,
-                content: content,
-                isCompleted: false,
-                timestamp: Date.now(),
-                lastEdit: null
-            });
+            await addDoc(recordsCol, { userId: currentUser.uid, date: dateVal, time: timeStr, content: content, isCompleted: false, timestamp: Date.now() });
             contentInput.value = "";
         } catch (e) { alert("خطأ في الحفظ"); }
     };
@@ -376,16 +366,12 @@
         const lists = { past: document.getElementById('list-past'), today: document.getElementById('list-today'), future: document.getElementById('list-future'), completed: document.getElementById('list-completed') };
         const timeline = document.getElementById('timelineContainer');
         Object.values(lists).forEach(l => l.innerHTML = "");
-
         const filtered = allRecords.filter(r => r.content.toLowerCase().includes(search));
-
         if (currentTab === 'completed') {
-            timeline.style.display = 'none';
-            lists.completed.style.display = 'block';
+            timeline.style.display = 'none'; lists.completed.style.display = 'block';
             filtered.filter(r => r.isCompleted).forEach(r => lists.completed.appendChild(createCard(r, 'status-completed')));
         } else {
-            timeline.style.display = 'block';
-            lists.completed.style.display = 'none';
+            timeline.style.display = 'block'; lists.completed.style.display = 'none';
             filtered.filter(r => !r.isCompleted).forEach(r => {
                 if (r.date === todayStr) lists.today.appendChild(createCard(r, 'status-today'));
                 else if (r.date > todayStr) lists.future.appendChild(createCard(r, 'status-future'));
@@ -399,17 +385,15 @@
 
     function createCard(r, statusClass) {
         const div = document.createElement('div');
-        div.id = `card-${r.id}`;
         div.className = `card record-card p-3 shadow-sm ${statusClass}`;
         const isComp = r.isCompleted;
-        const timeDisplay = r.time ? `<span class="ms-2">🕒 ${r.time}</span>` : "";
         div.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date} ${timeDisplay}</span>
+                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date} 🕒 ${r.time}</span>
                 <div class="d-flex gap-2">
-                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!isComp})" title="نقل الحالة"><i class="fa-solid ${isComp ? 'fa-rotate-left' : 'fa-check'}"></i></button>
-                    ${!isComp ? `<button class="btn-action text-warning shadow-sm" onclick="inlineEdit('${r.id}')" title="تعديل"><i class="fa-solid fa-pen-nib"></i></button>` : ''}
-                    ${!isComp ? `<button class="btn-action text-danger shadow-sm" onclick="triggerDelete('${r.id}')" title="حذف"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!isComp})"><i class="fa-solid ${isComp ? 'fa-rotate-left' : 'fa-check'}"></i></button>
+                    ${!isComp ? `<button class="btn-action text-warning shadow-sm" onclick="inlineEdit('${r.id}')"><i class="fa-solid fa-pen-nib"></i></button>` : ''}
+                    ${!isComp ? `<button class="btn-action text-danger shadow-sm" onclick="triggerDelete('${r.id}')"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                 </div>
             </div>
             <div id="content-container-${r.id}"><p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p></div>
@@ -417,31 +401,10 @@
         return div;
     }
 
-    window.inlineEdit = (id) => {
-        const r = allRecords.find(item => item.id === id);
-        const container = document.getElementById(`content-container-${id}`);
-        container.innerHTML = `<textarea id="edit-input-${id}" class="form-control inline-edit-input" rows="2">${r.content}</textarea>
-            <div class="d-flex gap-2 mt-2"><button class="btn btn-sm btn-success rounded-pill px-3" onclick="saveInline('${id}')">تأكيد</button>
-            <button class="btn btn-sm btn-light rounded-pill px-3" onclick="renderData()">إلغاء</button></div>`;
-    };
-
-    window.saveInline = async (id) => {
-        const newContent = document.getElementById(`edit-input-${id}`).value.trim();
-        if(!newContent) return;
-        const now = new Date();
-        const lastEditTime = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-        try { await updateDoc(doc(db, "smart_records", id), { content: newContent, lastEdit: lastEditTime }); } catch (e) { alert("خطأ"); }
-    };
-
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    window.triggerDelete = (id) => { recordToDelete = id; deleteModal.show(); };
-    document.getElementById('confirmDeleteBtn').onclick = async () => {
-        if(recordToDelete) { await deleteDoc(doc(db, "smart_records", recordToDelete)); recordToDelete = null; deleteModal.hide(); }
-    };
-
     window.toggleComplete = async (id, status) => { await updateDoc(doc(db, "smart_records", id), { isCompleted: status }); };
     window.setTab = (tab) => { currentTab = tab; window.renderData(); };
-    window.exportToExcel = () => { /* نفس الكود السابق للتصدير */ };
+    window.triggerDelete = (id) => { recordToDelete = id; new bootstrap.Modal(document.getElementById('deleteModal')).show(); };
+    document.getElementById('confirmDeleteBtn').onclick = async () => { if(recordToDelete) await deleteDoc(doc(db, "smart_records", recordToDelete)); location.reload(); };
 </script>
 </body>
 </html>
