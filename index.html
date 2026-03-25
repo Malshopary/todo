@@ -68,11 +68,12 @@
             border-radius: 50px; padding: 8px 25px; font-weight: 600; color: #666;
             display: flex; align-items: center; gap: 8px;
         }
-        .nav-pills .nav-link.active { background: var(--primary-grad); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); color: white;}
+        .nav-pills .nav-link.active { background: var(--primary-grad); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
         
-        /* ضبط لون العداد داخل التبويب النشط وغير النشط */
-        .nav-pills .nav-link .badge { background-color: #e9ecef; color: #495057; transition: 0.3s; }
-        .nav-pills .nav-link.active .badge { background-color: rgba(255,255,255,0.2); color: white; }
+        .count-badge {
+            background: rgba(0,0,0,0.05); color: inherit; padding: 2px 8px; border-radius: 50px; font-size: 0.75rem;
+        }
+        .active .count-badge { background: rgba(255,255,255,0.2); color: white; }
 
         .edit-badge {
             font-size: 0.7rem; color: #f39c12; background: #fef5e7;
@@ -92,8 +93,8 @@
         <h3 class="fw-bold mb-4" id="authTitle">تسجيل الدخول</h3>
         <input type="email" id="emailInput" class="form-control mb-3" placeholder="البريد الإلكتروني">
         <input type="password" id="passInput" class="form-control mb-4" placeholder="كلمة المرور">
-        <button onclick="handleAuth()" id="authBtn" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mb-3" style="background: var(--primary-grad); border:none;" title="انقر لتسجيل الدخول">دخول</button>
-        <p class="small text-muted" id="toggleAuthText">ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()" title="انتقل لصفحة إنشاء حساب جديد">سجل الآن</a></p>
+        <button onclick="handleAuth()" id="authBtn" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mb-3" style="background: var(--primary-grad); border:none;">دخول</button>
+        <p class="small text-muted" id="toggleAuthText">ليس لديك حساب؟ <a href="#" onclick="toggleAuthMode()">سجل الآن</a></p>
     </div>
 </div>
 
@@ -102,7 +103,7 @@
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-8">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span id="userEmailBadge" class="badge bg-white text-dark p-2 px-3 border rounded-pill shadow-sm" title="الحساب المسجل حالياً"></span>
+                    <span id="userEmailBadge" class="badge bg-white text-dark p-2 px-3 border rounded-pill shadow-sm"></span>
                     <button onclick="handleLogout()" class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm" title="تسجيل الخروج من الحساب"><i class="fa-solid fa-power-off"></i> خروج</button>
                 </div>
 
@@ -114,17 +115,17 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label fw-bold small text-muted">التاريخ</label>
-                                <input type="date" id="dateInput" class="form-control border-0 bg-light rounded-3" title="اختر تاريخ الملاحظة">
+                                <input type="date" id="dateInput" class="form-control border-0 bg-light rounded-3">
                             </div>
                             <div class="col-md-8">
                                 <label class="form-label fw-bold small text-muted">الملاحظة</label>
-                                <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟" title="اكتب ملاحظتك هنا">
+                                <input type="text" id="dataInput" class="form-control border-0 bg-light rounded-3" placeholder="ماذا يدور في ذهنك؟">
                             </div>
                             <div class="col-12 mt-4 text-center d-flex gap-2">
-                                <button onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);" title="حفظ الملاحظة في السحابة">
+                                <button onclick="handleSave()" class="btn btn-primary flex-grow-1 py-2 rounded-pill fw-bold shadow-lg border-0" style="background: var(--primary-grad);" title="حفظ الملاحظة في قاعدة البيانات">
                                     <i class="fa-solid fa-paper-plane me-2"></i> حفظ في السحابة
                                 </button>
-                                <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0" title="تصدير جميع السجلات إلى ملف Excel">
+                                <button onclick="exportToExcel()" class="btn btn-success px-4 py-2 rounded-pill fw-bold shadow-lg border-0" title="تحميل كافة البيانات في ملف Excel">
                                     <i class="fa-solid fa-file-excel"></i>
                                 </button>
                             </div>
@@ -134,23 +135,23 @@
 
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="searchInput" class="form-control shadow-sm" placeholder="ابحث في سجلاتك..." onkeyup="renderData()" title="اكتب للبحث في محتوى الملاحظات">
+                    <input type="text" id="searchInput" class="form-control shadow-sm" placeholder="ابحث في سجلاتك..." onkeyup="renderData()">
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <ul class="nav nav-pills bg-white shadow-sm p-1 rounded-pill" id="pills-tab">
                         <li class="nav-item">
-                            <button class="nav-link active" onclick="setTab('pending')" title="عرض الملاحظات قيد التنفيذ">
-                                المحفوظة <span id="pendingCount" class="badge rounded-pill">0</span>
+                            <button class="nav-link active" onclick="setTab('pending')" title="عرض الملاحظات الجاري العمل عليها">
+                                المحفوظة <span class="count-badge" id="pendingCount">0</span>
                             </button>
                         </li>
                         <li class="nav-item">
                             <button class="nav-link" onclick="setTab('completed')" title="عرض الملاحظات التي تم إنجازها">
-                                المكتملة <span id="completedCount" class="badge rounded-pill">0</span>
+                                المكتملة <span class="count-badge" id="completedCount">0</span>
                             </button>
                         </li>
                     </ul>
-                    <div class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3 fw-bold" id="currentDateDisplay" title="تاريخ اليوم"></div>
+                    <div class="badge bg-white text-dark shadow-sm p-2 rounded-pill px-3 fw-bold" id="currentDateDisplay"></div>
                 </div>
 
                 <div id="timelineContainer">
@@ -213,8 +214,16 @@
         const q = query(recordsCol, where("userId", "==", currentUser.uid), orderBy("timestamp", "desc"));
         unsub = onSnapshot(q, (snapshot) => {
             allRecords = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateCounters();
             window.renderData();
         });
+    }
+
+    function updateCounters() {
+        const pending = allRecords.filter(r => !r.isCompleted).length;
+        const completed = allRecords.filter(r => r.isCompleted).length;
+        document.getElementById('pendingCount').innerText = pending;
+        document.getElementById('completedCount').innerText = completed;
     }
 
     window.handleAuth = async () => {
@@ -267,21 +276,14 @@
 
         const filtered = allRecords.filter(r => r.content.toLowerCase().includes(search));
 
-        // حساب العدادات
-        const pendingArr = filtered.filter(r => !r.isCompleted);
-        const completedArr = filtered.filter(r => r.isCompleted);
-        
-        document.getElementById('pendingCount').innerText = pendingArr.length;
-        document.getElementById('completedCount').innerText = completedArr.length;
-
         if (currentTab === 'completed') {
             timeline.style.display = 'none';
             lists.completed.style.display = 'block';
-            completedArr.forEach(r => lists.completed.appendChild(createCard(r, 'status-completed')));
+            filtered.filter(r => r.isCompleted).forEach(r => lists.completed.appendChild(createCard(r, 'status-completed')));
         } else {
             timeline.style.display = 'block';
             lists.completed.style.display = 'none';
-            pendingArr.forEach(r => {
+            filtered.filter(r => !r.isCompleted).forEach(r => {
                 if (r.date === todayStr) lists.today.appendChild(createCard(r, 'status-today'));
                 else if (r.date > todayStr) lists.future.appendChild(createCard(r, 'status-future'));
                 else lists.past.appendChild(createCard(r, 'status-past'));
@@ -298,20 +300,22 @@
         div.className = `card record-card p-3 shadow-sm ${statusClass}`;
         
         const isComp = r.isCompleted;
-        const timeDisplay = r.time ? `<span class="ms-2" title="وقت الإضافة">🕒 ${r.time}</span>` : "";
+        const timeDisplay = r.time ? `<span class="ms-2">🕒 ${r.time}</span>` : "";
 
         div.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge rounded-pill bg-light text-muted border px-3" title="تاريخ الملاحظة">📅 ${r.date} ${timeDisplay}</span>
+                <span class="badge rounded-pill bg-light text-muted border px-3">📅 ${r.date} ${timeDisplay}</span>
                 <div class="d-flex gap-2">
-                    <button class="btn-action text-success shadow-sm" title="${isComp ? 'استرجاع للمحفوظة' : 'تحديد كمكتملة'}" onclick="toggleComplete('${r.id}', ${!isComp})"><i class="fa-solid ${isComp ? 'fa-rotate-left' : 'fa-check'}"></i></button>
-                    ${!isComp ? `<button class="btn-action text-warning shadow-sm" title="تعديل الملاحظة" onclick="inlineEdit('${r.id}')"><i class="fa-solid fa-pen-nib"></i></button>` : ''}
-                    ${!isComp ? `<button class="btn-action text-danger shadow-sm" title="حذف الملاحظة" onclick="deleteRecord('${r.id}')"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                    <button class="btn-action text-success shadow-sm" onclick="toggleComplete('${r.id}', ${!isComp})" title="${isComp ? 'إعادة الملاحظة للمحفوظات' : 'نقل إلى المكتملة'}">
+                        <i class="fa-solid ${isComp ? 'fa-rotate-left' : 'fa-check'}"></i>
+                    </button>
+                    ${!isComp ? `<button class="btn-action text-warning shadow-sm" onclick="inlineEdit('${r.id}')" title="تعديل الملاحظة مكانها"><i class="fa-solid fa-pen-nib"></i></button>` : ''}
+                    ${!isComp ? `<button class="btn-action text-danger shadow-sm" onclick="deleteRecord('${r.id}')" title="حذف الملاحظة نهائياً"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                 </div>
             </div>
             <div id="content-container-${r.id}">
                 <p class="mb-1 fw-bold text-dark fs-6 text-break" style="white-space: pre-wrap;">${r.content}</p>
-                ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge" title="تاريخ ووقت آخر تعديل"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
+                ${r.lastEdit ? `<div class="mt-2"><span class="edit-badge"><i class="fa-solid fa-history me-1"></i> عُدل في: ${r.lastEdit}</span></div>` : ''}
             </div>
         `;
         return div;
@@ -321,10 +325,10 @@
         const r = allRecords.find(item => item.id === id);
         const container = document.getElementById(`content-container-${id}`);
         container.innerHTML = `
-            <textarea id="edit-input-${id}" class="form-control inline-edit-input" rows="2" title="اكتب التعديل الجديد هنا">${r.content}</textarea>
+            <textarea id="edit-input-${id}" class="form-control inline-edit-input" rows="2">${r.content}</textarea>
             <div class="d-flex gap-2 mt-2">
-                <button class="btn btn-sm btn-success rounded-pill px-3" title="تأكيد وحفظ التعديل" onclick="saveInline('${id}')">حفظ التعديل</button>
-                <button class="btn btn-sm btn-light rounded-pill px-3" title="إلغاء والعودة" onclick="renderData()">إلغاء</button>
+                <button class="btn btn-sm btn-success rounded-pill px-3" onclick="saveInline('${id}')" title="حفظ التغييرات الجديدة">تأكيد</button>
+                <button class="btn btn-sm btn-light rounded-pill px-3" onclick="renderData()" title="تجاهل التعديلات">إلغاء</button>
             </div>
         `;
     };
@@ -352,4 +356,13 @@
     window.exportToExcel = () => {
         if (allRecords.length === 0) return alert("لا يوجد بيانات لتصديرها");
         let csv = "\ufeffالتاريخ,الوقت,المحتوى,الحالة\n";
-        allRecords.forEach(r => { csv +=
+        allRecords.forEach(r => { csv += `"${r.date}","${r.time || ''}","${r.content.replace(/"/g, '""')}","${r.isCompleted ? 'مكتمل' : 'محفوظ'}"\n`; });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `سجل_سحابي_${new Date().toLocaleDateString()}.csv`;
+        link.click();
+    };
+</script>
+</body>
+</html>
